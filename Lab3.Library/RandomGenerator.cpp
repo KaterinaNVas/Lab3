@@ -1,3 +1,7 @@
+/**
+ * @file RandomGenerator.cpp
+ * @brief Реализация RandomGenerator. Подробные описания методов находятся в заголовочном файле.
+ */
 #include "RandomGenerator.h"
 
 #include <stdexcept>
@@ -23,6 +27,6 @@ miit::algebra::RandomGenerator::RandomGenerator(
         );
 }
 
-int miit::algebra::RandomGenerator::generate() {
+int miit::algebra::RandomGenerator::generate() const {
     return distribution_(generator_);
 }
