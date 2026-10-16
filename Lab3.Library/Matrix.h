@@ -143,7 +143,7 @@ public:
      * @note Индекс столбца при следующем [] не проверяется.
      */
     std::vector<T>& operator[](const std::size_t row) {
-        if (row >= rows_)
+        if (row >= data_.size())
             throw std::out_of_range("Invalid row index");
         return data_[row];
     }
@@ -156,7 +156,7 @@ public:
      * @note Индекс столбца при следующем [] не проверяется.
      */
     const std::vector<T>& operator[](const std::size_t row) const {
-        if (row >= rows_)
+        if (row >= data_.size())
             throw std::out_of_range("Invalid row index");
         return data_[row];
     }
