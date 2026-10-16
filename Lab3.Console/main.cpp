@@ -1,3 +1,7 @@
+/**
+ * @file main.cpp
+ * @brief Консольный ввод матрицы, выбор генератора и выполнение задания.
+ */
 #include "../Lab3.Library/ConstantGenerator.h"
 #include "../Lab3.Library/Generator.h"
 #include "../Lab3.Library/IStreamGenerator.h"
@@ -22,18 +26,18 @@ using namespace miit::algebra;
  * @brief Способы заполнения матрицы.
  */
 enum GeneratorChoice {
-    randomFill = 1,
-    constantFill = 2,
-    inputFill = 3,
-    zeroFill = 4
+    randomFill = 1, ///< Случайные целые числа.
+    constantFill = 2, ///< Постоянное значение.
+    inputFill = 3, ///< Чтение из входного потока.
+    zeroFill = 4 ///< Заполнение нулями.
 };
 
 /**
  * @brief Варианты задания.
  */
 enum TaskChoice {
-    task1Choice = 1,
-    task2Choice = 2
+    task1Choice = 1, ///< Замена первого максимума каждой строки нулём.
+    task2Choice = 2 ///< Вставка нулевых строк перед строками с первым элементом, кратным трём.
 };
 
 /**
@@ -41,14 +45,14 @@ enum TaskChoice {
  * @param message Сообщение для пользователя.
  * @return Введённое положительное число.
  */
-std::size_t getPositive(const char* message);
+std::size_t getPositive(const char* const message);
 
 /**
  * @brief Получает целое число.
  * @param message Сообщение для пользователя.
  * @return Введённое целое число.
  */
-int getInteger(const char* message);
+int getInteger(const char* const message);
 
 /**
  * @brief Позволяет выбрать способ заполнения матрицы.
@@ -56,7 +60,7 @@ int getInteger(const char* message);
  * @return Указатель на созданный генератор.
  */
 std::unique_ptr<Generator> chooseGenerator(
-    const char* message
+    const char* const message
 );
 
 /**
@@ -66,7 +70,7 @@ std::unique_ptr<Generator> chooseGenerator(
  */
 void runTask(
     const Matrix<int>& matrix,
-    Generator& generator
+    const Generator& generator
 );
 
 /**
@@ -89,7 +93,7 @@ int main() {
 
     Matrix<int> matrix(rows, columns);
 
-    std::unique_ptr<Generator> generator =
+    const std::unique_ptr<Generator> generator =
         chooseGenerator(
             "Выберите способ заполнения матрицы:"
         );
@@ -106,7 +110,7 @@ int main() {
     return 0;
 }
 
-std::size_t getPositive(const char* message) {
+std::size_t getPositive(const char* const message) {
     std::cout << message << '\n';
 
     long long value{};
@@ -122,7 +126,7 @@ std::size_t getPositive(const char* message) {
     std::exit(EXIT_FAILURE);
 }
 
-int getInteger(const char* message) {
+int getInteger(const char* const message) {
     if (message[0] != '\0') {
         std::cout << message << '\n';
     }
@@ -140,7 +144,7 @@ int getInteger(const char* message) {
 }
 
 std::unique_ptr<Generator> chooseGenerator(
-    const char* message
+    const char* const message
 ) {
     std::cout
         << message << '\n'
@@ -196,7 +200,7 @@ std::unique_ptr<Generator> chooseGenerator(
 
 void runTask(
     const Matrix<int>& matrix,
-    Generator& generator
+    const Generator& generator
 ) {
     std::cout
         << "\nВыберите задание:\n"
@@ -211,7 +215,7 @@ void runTask(
 
     switch (choice) {
         case task1Choice: {
-            Task1 task(matrix, generator);
+            const Task1 task(matrix, generator);
             const Matrix<int> result = task.solve();
 
             std::cout
@@ -223,7 +227,7 @@ void runTask(
         }
 
         case task2Choice: {
-            Task2 task(matrix, generator);
+            const Task2 task(matrix, generator);
             const Matrix<int> result = task.solve();
 
             std::cout

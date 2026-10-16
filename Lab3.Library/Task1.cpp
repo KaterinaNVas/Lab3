@@ -4,6 +4,7 @@
  */
 #include "Task1.h"
 #include <algorithm>
+#include <vector>
 
 miit::algebra::Task1::Task1(
     const Matrix<int>& matrix, const Generator& generator
@@ -16,11 +17,11 @@ miit::algebra::Matrix<int> miit::algebra::Task1::solve() const {
         return result;
 
     for (std::size_t i = 0; i < result.rows(); ++i) {
-        const auto row = result[i];
+        std::vector<int>& row = result[i];
 
         const auto maximum = std::max_element(
-            row,
-            row + result.columns()
+            row.begin(),
+            row.end()
         );
 
         *maximum = 0;

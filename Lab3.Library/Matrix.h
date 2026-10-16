@@ -1,6 +1,6 @@
 /**
  * @file Matrix.h
- * @brief Объявления Matrix.
+ * @brief Объявление и реализация шаблонной матрицы Matrix<T>.
  */
 #pragma once
 
@@ -17,7 +17,7 @@
 namespace miit::algebra {
 
 /**
- * @brief Матрица с хранением элементов в одном векторе.
+ * @brief Матрица с хранением каждой строки в отдельном векторе.
  * @tparam T Тип элементов матрицы.
  */
 template<typename T>
@@ -35,7 +35,7 @@ public:
      * @throws std::length_error Если количество элементов превышает допустимый размер.
      */
     Matrix(const std::size_t rows, const std::size_t columns)
-        : data_(checkedSize(rows, columns)), columns_(columns), rows_(rows) {
+        : data_(makeData(rows, columns)), columns_(columns), rows_(rows) {
     }
 
     /**
@@ -58,7 +58,7 @@ public:
      * @throws std::invalid_argument Если длины строк различаются.
      * @throws std::length_error Если матрица слишком велика.
      */
-    Matrix(std::initializer_list<std::vector<T>> list)
+    Matrix(const std::initializer_list<std::vector<T>> list)
         : columns_(list.size() == 0 ? 0 : list.begin()->size()),
           rows_(list.size()) {
         for (const auto& row : list) {
@@ -66,16 +66,15 @@ public:
                 throw std::invalid_argument("Rows have different sizes");
         }
 
-        data_.reserve(checkedSize(rows_, columns_));
-
-        for (const auto& row : list)
-            data_.insert(data_.end(), row.begin(), row.end());
+        checkedSize(rows_, columns_);
+        data_.assign(list.begin(), list.end());
     }
 
     /**
-     * @brief Создаёт копию матрицы.
+     * @brief Создаёт независимую копию матрицы.
+     * @param other Копируемая матрица.
      */
-    Matrix(const Matrix&) = default;
+    Matrix(const Matrix& other) = default;
     /**
      * @brief Перемещает данные матрицы, обнуляя размеры исходного объекта.
      * @param other Исходная матрица.
@@ -88,9 +87,10 @@ public:
     }
     /**
      * @brief Копирует матрицу при присваивании.
+     * @param other Копируемая матрица.
      * @return Ссылка на текущую матрицу.
      */
-    Matrix& operator=(const Matrix&) = default;
+    Matrix& operator=(const Matrix& other) = default;
     /**
      * @brief Перемещает матрицу при присваивании.
      * @param other Исходная матрица.
@@ -115,9 +115,6 @@ public:
      * @return Количество строк матрицы.
      */
     std::size_t rows() const noexcept {
-        /**
-         * @brief Количество строк матрицы.
-         */
         return rows_;
     }
 
@@ -126,9 +123,6 @@ public:
      * @return Количество столбцов матрицы.
      */
     std::size_t columns() const noexcept {
-        /**
-         * @brief Количество столбцов матрицы.
-         */
         return columns_;
     }
 
@@ -141,75 +135,41 @@ public:
     }
 
     /**
-     * @brief Возвращает указатель на начало строки.
+     * @brief Возвращает изменяемую строку матрицы.
      * @param row Индекс строки, начиная с нуля.
-     * @return Указатель на начало строки.
+     * @return Ссылка на строку.
+     * @warning Изменять длину возвращённой строки нельзя: это нарушает размеры матрицы.
      * @throws std::out_of_range Если индекс строки недопустим.
      * @note Индекс столбца при следующем [] не проверяется.
      */
-    T* operator[](const std::size_t row) {
+    std::vector<T>& operator[](const std::size_t row) {
         if (row >= rows_)
             throw std::out_of_range("Invalid row index");
-
-        if (columns_ == 0)
-            return data_.data();
-
-        return data_.data() + row * columns_;
+        return data_[row];
     }
 
     /**
-     * @brief Возвращает указатель на начало строки только для чтения.
+     * @brief Возвращает строку матрицы только для чтения.
      * @param row Индекс строки, начиная с нуля.
-     * @return Указатель на начало строки.
+     * @return Константная ссылка на строку.
      * @throws std::out_of_range Если индекс строки недопустим.
      * @note Индекс столбца при следующем [] не проверяется.
      */
-    const T* operator[](const std::size_t row) const {
+    const std::vector<T>& operator[](const std::size_t row) const {
         if (row >= rows_)
             throw std::out_of_range("Invalid row index");
-
-        if (columns_ == 0)
-            return data_.data();
-
-        return data_.data() + row * columns_;
-    }
-
-    /**
-     * @brief Предоставляет изменяемый доступ к элементу с проверкой индексов.
-     * @param row Индекс строки, начиная с нуля.
-     * @param column Индекс столбца, начиная с нуля.
-     * @return Ссылка на элемент матрицы.
-     * @throws std::out_of_range Если любой индекс недопустим.
-     */
-    T& at(const std::size_t row, const std::size_t column) {
-        if (row >= rows_ || column >= columns_)
-            throw std::out_of_range("Invalid matrix index");
-
-        return data_.at(row * columns_ + column);
-    }
-
-    /**
-     * @brief Предоставляет доступ только для чтения к элементу с проверкой индексов.
-     * @param row Индекс строки, начиная с нуля.
-     * @param column Индекс столбца, начиная с нуля.
-     * @return Ссылка на элемент матрицы.
-     * @throws std::out_of_range Если любой индекс недопустим.
-     */
-    const T& at(const std::size_t row,
-                const std::size_t column) const {
-        if (row >= rows_ || column >= columns_)
-            throw std::out_of_range("Invalid matrix index");
-
-        return data_.at(row * columns_ + column);
+        return data_[row];
     }
 
     /**
      * @brief Заполняет элементы матрицы значениями генератора по строкам.
      * @param generator Генератор значений.
+     * @note Исключения генератора передаются вызывающему коду; матрица может быть заполнена частично.
      */
     void fill(const Generator& generator) {
-        for (auto& value : data_)
-            value = static_cast<T>(generator.generate());
+        for (auto& row : data_)
+            for (auto& value : row)
+                value = static_cast<T>(generator.generate());
     }
 
     /**
@@ -218,6 +178,8 @@ public:
      * @param row Вставляемая строка.
      * @throws std::out_of_range Если позиция недопустима.
      * @throws std::invalid_argument Если длина строки не равна columns().
+     * @throws std::length_error Если добавление строки превышает допустимый размер.
+     * @throws std::bad_alloc Если не удалось выделить память.
      */
     void insertRow(const std::size_t position,
                    const std::vector<T>& row) {
@@ -227,16 +189,14 @@ public:
         if (row.size() != columns_)
             throw std::invalid_argument("Invalid row size");
 
+        if (rows_ == data_.max_size())
+            throw std::length_error("Matrix is too large");
+        checkedSize(rows_ + 1, columns_);
         data_.insert(
-            data_.begin()
-                + static_cast<std::ptrdiff_t>(position * columns_),
-            row.begin(),
-            row.end()
+            data_.begin() + static_cast<std::ptrdiff_t>(position),
+            row
         );
 
-        /**
-         * @brief Количество строк матрицы.
-         */
         ++rows_;
     }
 
@@ -252,7 +212,7 @@ public:
                 if (j != 0)
                     out << ' ';
 
-                out << at(i, j);
+                out << (*this)[i][j];
             }
 
             if (i + 1 != rows_)
@@ -271,22 +231,12 @@ public:
         if (columns_ == 0)
             return *this;
 
-        /**
-         * @brief Количество столбцов матрицы.
-         */
         const std::size_t shift = positions % columns_;
 
-        for (std::size_t i = 0; i < rows_; ++i) {
-            const auto first = data_.begin()
-                + static_cast<std::ptrdiff_t>(i * columns_);
-            const auto last = first
-                + static_cast<std::ptrdiff_t>(columns_);
-
-            std::rotate(
-                first,
-                first + static_cast<std::ptrdiff_t>(shift),
-                last
-            );
+        for (auto& row : data_) {
+            std::rotate(row.begin(),
+                        row.begin() + static_cast<std::ptrdiff_t>(shift),
+                        row.end());
         }
 
         return *this;
@@ -301,22 +251,12 @@ public:
         if (columns_ == 0)
             return *this;
 
-        /**
-         * @brief Количество столбцов матрицы.
-         */
         const std::size_t shift = positions % columns_;
 
-        for (std::size_t i = 0; i < rows_; ++i) {
-            const auto first = data_.begin()
-                + static_cast<std::ptrdiff_t>(i * columns_);
-            const auto last = first
-                + static_cast<std::ptrdiff_t>(columns_);
-
-            std::rotate(
-                first,
-                last - static_cast<std::ptrdiff_t>(shift),
-                last
-            );
+        for (auto& row : data_) {
+            std::rotate(row.begin(),
+                        row.end() - static_cast<std::ptrdiff_t>(shift),
+                        row.end());
         }
 
         return *this;
@@ -327,16 +267,30 @@ public:
      * @param other Матрица для сравнения.
      * @return true, если размеры и все элементы совпадают.
      */
-    bool operator==(const Matrix& other) const {
+    bool equals(const Matrix& other) const {
         return rows_ == other.rows_
             && columns_ == other.columns_
-            /**
-             * @brief Элементы матрицы, расположенные последовательно по строкам.
-             */
             && data_ == other.data_;
     }
 
 private:
+    /**
+     * @brief Проверяет размеры и создаёт хранилище строк.
+     * @param rows Количество строк.
+     * @param columns Количество столбцов.
+     * @return Вектор строк с элементами, инициализированными значением T{}.
+     * @throws std::length_error Если размеры превышают допустимые.
+     * @throws std::bad_alloc Если не удалось выделить память.
+     */
+    static std::vector<std::vector<T>> makeData(
+        const std::size_t rows, const std::size_t columns) {
+        checkedSize(rows, columns);
+        std::vector<std::vector<T>> data(rows);
+        for (auto& row : data)
+            row.resize(columns);
+        return data;
+    }
+
     /**
      * @brief Проверяет допустимость размеров и вычисляет количество элементов.
      * @param rows Количество строк.
@@ -346,6 +300,10 @@ private:
      */
     static std::size_t checkedSize(const std::size_t rows,
                                    const std::size_t columns) {
+        if (rows > std::vector<std::vector<T>>{}.max_size()
+            || columns > std::vector<T>{}.max_size())
+            throw std::length_error("Matrix is too large");
+
         if (columns != 0
             && rows > std::vector<T>{}.max_size() / columns)
             throw std::length_error("Matrix is too large");
@@ -354,9 +312,9 @@ private:
     }
 
     /**
-     * @brief Элементы матрицы, расположенные последовательно по строкам.
+     * @brief Строки матрицы, каждая из которых хранится в отдельном векторе.
      */
-    std::vector<T> data_;
+    std::vector<std::vector<T>> data_;
     /**
      * @brief Количество столбцов матрицы.
      */

@@ -18,14 +18,14 @@ miit::algebra::Matrix<int> miit::algebra::Task2::solve() const {
     const std::vector<int> zeroRow(matrix_.columns(), 0);
 
     for (std::size_t i = 0; i < matrix_.rows(); ++i) {
-        if (matrix_.at(i, 0) % 3 == 0)
+        if (matrix_[i][0] % 3 == 0)
             result.insertRow(result.rows(), zeroRow);
 
         std::vector<int> row;
         row.reserve(matrix_.columns());
 
         for (std::size_t j = 0; j < matrix_.columns(); ++j)
-            row.push_back(matrix_.at(i, j));
+            row.push_back(matrix_[i][j]);
 
         result.insertRow(result.rows(), row);
     }

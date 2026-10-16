@@ -1,6 +1,6 @@
 {
     "code-runner.runInTerminal": true,
     "code-runner.executorMap": {
-        "cpp": "cd $dir; chcp 65001 > $null; g++ -std=c++17 -finput-charset=UTF-8 -fexec-charset=UTF-8 \"$fileName\" (Get-ChildItem \"..\\Lab3.Library\\*.cpp\").FullName -o \"main.exe\"; if ($?) { .\\main.exe }"
+        "cpp": "cd \"$workspaceRoot\"; chcp 65001 > $null; g++ -std=c++17 -finput-charset=UTF-8 -fexec-charset=UTF-8 \".\\Lab3.Console\\main.cpp\" (Get-ChildItem \".\\Lab3.Library\\*.cpp\").FullName -o \".\\Lab3.Console\\main.exe\"; if ($LASTEXITCODE -eq 0) { .\\Lab3.Console\\main.exe }"
     }
 }
