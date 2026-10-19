@@ -6,7 +6,8 @@
 #include <vector>
 
 miit::algebra::Task2::Task2(
-    const Matrix<int>& matrix, const Generator& generator
+    Matrix<int>& matrix,
+    const Generator& generator
 ) : Exercise(matrix, generator) {}
 
 miit::algebra::Matrix<int> miit::algebra::Task2::solve() const {

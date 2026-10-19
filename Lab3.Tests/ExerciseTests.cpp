@@ -16,19 +16,25 @@
 
 using namespace miit::algebra;
 
-/** @brief Запускает проверки матрицы. */
+/**
+ * @brief Запускает проверки матрицы.
+ */
 void runMatrixTests();
-/** @brief Запускает проверки генераторов. */
+
+/**
+ * @brief Запускает проверки генераторов.
+ */
 void runGeneratorTests();
 
 /**
- * @brief Проверки заданий и точка входа в программу тестирования.
- * @note Проверки используют assert и должны выполняться без определения NDEBUG.
+ * @brief Проверяет выполнение заданий и сохранность исходной матрицы.
+ * @note Проверки используют assert и должны выполняться
+ * без определения NDEBUG.
  */
 void runExerciseTests() {
     const ConstantGenerator generator(0);
 
-    const Matrix<int> source{
+    Matrix<int> source{
         {1, 9, 3},
         {-2, -7, -1},
         {6, 5, 4}
@@ -44,8 +50,9 @@ void runExerciseTests() {
 
     assert(task1.solve().equals(expectedTask1));
 
-    const Matrix<int> repeated{{9, 9, 2}};
+    Matrix<int> repeated{{9, 9, 2}};
     const Matrix<int> firstMaximumOnly{{0, 9, 2}};
+
     assert(Task1(repeated, generator).solve().equals(firstMaximumOnly));
     assert(task1.matrix().equals(source));
 
@@ -60,7 +67,7 @@ void runExerciseTests() {
 
     assert(task2.solve().equals(expectedTask2));
 
-    const Matrix<int> zeroFirstSource{
+    Matrix<int> zeroFirstSource{
         {0, 1},
         {2, 3}
     };

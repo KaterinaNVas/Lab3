@@ -199,7 +199,7 @@ std::unique_ptr<Generator> chooseGenerator(
 }
 
 void runTask(
-    const Matrix<int>& matrix,
+    Matrix<int>& matrix,
     const Generator& generator
 ) {
     std::cout
