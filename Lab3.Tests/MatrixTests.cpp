@@ -5,37 +5,64 @@
 #include "../Lab3.Library/Matrix.h"
 
 #include <cassert>
+#include <cmath>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
-#include <vector>
+#include <vector> 
+#include <string>
 
 using miit::algebra::Matrix;
 
 static_assert(std::is_same_v<
-    decltype(std::declval<Matrix<int>&>()[0]), std::vector<int>&>);
+    decltype(std::declval<Matrix<int>&>()[0]),
+    std::vector<int>&>);
+
 static_assert(std::is_same_v<
-    decltype(std::declval<const Matrix<int>&>()[0]), const std::vector<int>&>);
+    decltype(std::declval<const Matrix<int>&>()[0]),
+    const std::vector<int>&>);
+
+namespace {
 
 /**
- * @brief Проверки шаблонной матрицы и её операций.
- * @details Целые значения сравниваются через std::equal_to; размеры — через
- * std::equal_to<std::size_t>, элементы и результаты генераторов — через std::equal_to<int>.
- * @note Проверки используют assert и должны выполняться без определения NDEBUG.
+ * @brief Сравнивает два дробных числа с заданной точностью.
+ * @param actual Фактическое значение.
+ * @param expected Ожидаемое значение.
+ * @param epsilon Допустимая абсолютная погрешность.
+ * @return true, если разность значений по модулю не превышает epsilon.
+ */
+bool equals(const double actual, const double expected,
+            const double epsilon = 1e-9) {
+    return std::abs(actual - expected) <= epsilon;
+}
+
+} // namespace
+
+/**
+ * @brief Проверяет шаблонную матрицу и её операции.
+ * @details Дробные значения сравниваются через equals с погрешностью.
+ * Целые значения сравниваются через std::equal_to<int>,
+ * размеры — через std::equal_to<std::size_t>,
+ * матрицы — через метод Matrix::equals.
+ * @note Проверки используют assert и должны выполняться
+ * без определения NDEBUG.
  */
 void runMatrixTests() {
     const Matrix<double> fractional{{1.5, 2.5}, {3.5, 4.5}};
-    assert(fractional[1][0] == 3.5);
+    assert(equals(fractional[1][0], 3.5));
 
     Matrix<int> original{{1, 2}, {3, 4}};
     const Matrix<int> moved(std::move(original));
-    assert(std::equal_to<std::size_t>{}(original.rows(), 0) && std::equal_to<std::size_t>{}(original.columns(), 0));
+
+    assert(std::equal_to<std::size_t>{}(original.rows(), 0));
+    assert(std::equal_to<std::size_t>{}(original.columns(), 0));
     assert(std::equal_to<int>{}(moved[1][1], 4));
 
     Matrix<int> noColumns(2, 0);
     assert(noColumns[0].empty());
+
     noColumns.insertRow(1, {});
     assert(std::equal_to<std::size_t>{}(noColumns.rows(), 3));
 
@@ -50,13 +77,12 @@ void runMatrixTests() {
     assert(std::equal_to<int>{}(matrix[0][0], 1));
     assert(std::equal_to<int>{}(matrix[1][2], 6));
 
-    assert(
-        matrix.toString() ==
+    assert(std::equal_to<std::string>{}(
+        matrix.toString(),
         "1 2 3\n4 5 6"
-    );
+    ));
 
     Matrix<int> copy = matrix;
-
     assert(copy.equals(matrix));
 
     copy << 1;
@@ -69,7 +95,6 @@ void runMatrixTests() {
     assert(copy.equals(shiftedLeft));
 
     copy >> 1;
-
     assert(copy.equals(matrix));
 
     matrix.insertRow(1, {7, 8, 9});
