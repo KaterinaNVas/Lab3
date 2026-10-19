@@ -16,7 +16,7 @@ public:
      * @param matrix Исходная матрица.
      * @param generator Генератор, который должен существовать дольше задания.
      */
-    Task1(const Matrix<int>& matrix, const Generator& generator);
+    Task1(Matrix<int>& matrix, const Generator& generator);
     /**
      * @brief Заменяет первый максимум каждой строки нулём.
      * @return Матрица результата; исходная матрица не изменяется.
