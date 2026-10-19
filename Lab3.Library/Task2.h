@@ -16,7 +16,7 @@ public:
      * @param matrix Исходная матрица.
      * @param generator Генератор, который должен существовать дольше задания.
      */
-    Task2(const Matrix<int>& matrix, const Generator& generator);
+    Task2(Matrix<int>& matrix, const Generator& generator);
     /**
      * @brief Вставляет нулевые строки перед строками с первым элементом, кратным трём.
      * @return Матрица результата; исходная матрица не изменяется.

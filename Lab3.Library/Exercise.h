@@ -26,7 +26,7 @@ public:
      * @param matrix Исходная матрица.
      * @param generator Генератор, который должен существовать дольше задания.
      */
-    Exercise(const Matrix<int>& matrix, const Generator& generator);
+    Exercise(Matrix<int>& matrix, const Generator& generator);
     /**
      * @brief Обеспечивает корректное уничтожение объекта через базовый класс.
      */
