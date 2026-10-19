@@ -26,10 +26,10 @@ using namespace miit::algebra;
  * @brief Способы заполнения матрицы.
  */
 enum GeneratorChoice {
-    randomFill = 1, ///< Случайные целые числа.
+    randomFill = 1,   ///< Случайные целые числа.
     constantFill = 2, ///< Постоянное значение.
-    inputFill = 3, ///< Чтение из входного потока.
-    zeroFill = 4 ///< Заполнение нулями.
+    inputFill = 3,    ///< Чтение из входного потока.
+    zeroFill = 4      ///< Заполнение нулями.
 };
 
 /**
@@ -37,7 +37,8 @@ enum GeneratorChoice {
  */
 enum TaskChoice {
     task1Choice = 1, ///< Замена первого максимума каждой строки нулём.
-    task2Choice = 2 ///< Вставка нулевых строк перед строками с первым элементом, кратным трём.
+    task2Choice = 2  ///< Вставка нулевых строк перед строками с первым
+                     ///< элементом, кратным трём.
 };
 
 /**
@@ -69,7 +70,7 @@ std::unique_ptr<Generator> chooseGenerator(
  * @param generator Используемый генератор.
  */
 void runTask(
-    const Matrix<int>& matrix,
+    Matrix<int>& matrix,
     const Generator& generator
 );
 
@@ -94,9 +95,7 @@ int main() {
     Matrix<int> matrix(rows, columns);
 
     const std::unique_ptr<Generator> generator =
-        chooseGenerator(
-            "Выберите способ заполнения матрицы:"
-        );
+        chooseGenerator("Выберите способ заполнения матрицы:");
 
     matrix.fill(*generator);
 
@@ -177,17 +176,13 @@ std::unique_ptr<Generator> chooseGenerator(
             const int value =
                 getInteger("Введите значение константы:");
 
-            return std::make_unique<ConstantGenerator>(
-                value
-            );
+            return std::make_unique<ConstantGenerator>(value);
         }
 
         case inputFill:
             std::cout << "Введите значения матрицы:\n";
 
-            return std::make_unique<IStreamGenerator>(
-                std::cin
-            );
+            return std::make_unique<IStreamGenerator>(std::cin);
 
         case zeroFill:
             return std::make_unique<ZeroGenerator>();
